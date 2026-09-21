@@ -1,0 +1,4 @@
+python-dotenv>=1.0
+spotipy>=2.24
+ytmusicapi>=1.7
+requests>=2.32

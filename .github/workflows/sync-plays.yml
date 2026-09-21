@@ -1,0 +1,72 @@
+name: Sync plays
+
+on:
+  schedule:
+    # GitHub's minimum is 5 min and runs are often delayed; recently-played
+    # returns the last 50 plays, so every 30 min loses nothing.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-plays
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout private data repo
+        uses: actions/checkout@v4
+        with:
+          repository: vishwambharaRH/chord-data
+          token: ${{ secrets.DATA_REPO_PAT }}
+          path: chord-data
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Restore Spotify token cache
+        run: printf '%s' "$SPOTIFY_TOKEN_CACHE" > config/.spotify_token_cache
+        env:
+          SPOTIFY_TOKEN_CACHE: ${{ secrets.SPOTIFY_TOKEN_CACHE }}
+
+      - name: Ingest plays uploaded from the phone
+        run: python -m src.ingestors.phone_events chord-data/inbox
+        env:
+          CHORD_DB_PATH: ${{ github.workspace }}/chord-data/chord.db
+
+      - name: Sync recently played
+        run: python -m src.ingestors.spotify_recent
+        env:
+          CHORD_DB_PATH: ${{ github.workspace }}/chord-data/chord.db
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
+
+      - name: Generate dashboard stats
+        run: python scripts/generate_stats.py
+        env:
+          CHORD_DB_PATH: ${{ github.workspace }}/chord-data/chord.db
+          CHORD_STATS_PATH: ${{ github.workspace }}/chord-data/data.json
+
+      - name: Commit updated database
+        working-directory: chord-data
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "chord-bot"
+          git config user.email "chord-bot@users.noreply.github.com"
+          # Single rewritten commit: a binary DB committed every run would
+          # bloat the repo's history by megabytes each time.
+          git add -A
+          git commit --amend --no-edit
+          git push --force-with-lease

@@ -1,4 +1,13 @@
 .env
 __pycache__/
-.DS_Store/
+.DS_Store
 */.DS_Store
+
+# personal listening data
+data/*
+!data/.gitkeep
+!data/sample
+web/data.json
+
+# spotify OAuth token cache
+config/.spotify_token_cache
