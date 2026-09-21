@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chord</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>🎵 Chord</h1>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="tracks">Top Tracks</button>
+      <button class="tab-btn" data-tab="artists">Top Artists</button>
+      <button class="tab-btn" data-tab="activity">Activity</button>
+      <button class="tab-btn" data-tab="vinyl">Top Albums</button>
+    </nav>
+    <span class="generated-at" id="generated-at"></span>
+  </header>
+
+  <div class="filter-bar" id="service-filter"></div>
+
+  <main id="app">
+    <section id="tab-overview" class="tab-panel active">
+      <div class="stat-grid" id="stat-grid"></div>
+      <div class="panel">
+        <h2>Recently played</h2>
+        <ul class="track-list" id="recent-plays"></ul>
+      </div>
+    </section>
+
+    <section id="tab-tracks" class="tab-panel">
+      <div class="panel">
+        <h2>Top Tracks</h2>
+        <ol class="rank-list" id="top-tracks"></ol>
+      </div>
+    </section>
+
+    <section id="tab-artists" class="tab-panel">
+      <div class="panel">
+        <h2>Top Artists</h2>
+        <ol class="rank-list" id="top-artists"></ol>
+      </div>
+    </section>
+
+    <section id="tab-activity" class="tab-panel">
+      <div class="panel">
+        <h2>Plays per month</h2>
+        <canvas id="chart-month" height="90"></canvas>
+      </div>
+      <div class="panel-row">
+        <div class="panel">
+          <h2>Plays by weekday</h2>
+          <canvas id="chart-weekday" height="140"></canvas>
+        </div>
+        <div class="panel">
+          <h2>Plays by hour of day</h2>
+          <canvas id="chart-hour" height="140"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Plays by service</h2>
+        <canvas id="chart-service" height="80"></canvas>
+      </div>
+    </section>
+
+    <section id="tab-vinyl" class="tab-panel">
+      <p class="vinyl-caption">Your top 50 albums — hover a record for play stats. Cover art is Spotify-only for now.</p>
+      <div class="vinyl-panel" id="vinyl-shelf"></div>
+    </section>
+  </main>
+
+  <p id="empty-state" class="empty-state" hidden>
+    No data yet — run <code>python3 scripts/generate_stats.py</code> after importing your listening history.
+  </p>
+
+  <script src="app.js"></script>
+</body>
+</html>
