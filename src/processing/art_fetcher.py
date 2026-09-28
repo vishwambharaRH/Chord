@@ -52,7 +52,7 @@ def _pending_representative_tracks(db: DBManager, limit: int = TOP_ALBUMS):
         return pending
 
 
-def fetch_art(db: DBManager) -> int:
+def fetch_art(db: DBManager, interactive: bool = True) -> int:
     """Backfill album art (and track duration) for the top albums using the
     track URIs captured during history import.
 
@@ -60,7 +60,7 @@ def fetch_art(db: DBManager) -> int:
     (likely a Development Mode restriction), even though the single-track
     endpoint works fine — so this fetches one track at a time instead.
     """
-    sp = get_client()
+    sp = get_client(interactive=interactive)
     pending = _pending_representative_tracks(db)
     print(f"{len(pending)} albums still need art (1 API call each).")
 
@@ -103,5 +103,5 @@ def fetch_art(db: DBManager) -> int:
 
 if __name__ == "__main__":
     manager = DBManager()
-    count = fetch_art(manager)
+    count = fetch_art(manager, interactive=False)
     print(f"Backfilled art for {count} albums.")

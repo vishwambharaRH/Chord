@@ -45,6 +45,9 @@ body {
 }
 
 .tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: transparent;
   border: none;
   color: var(--muted);
@@ -52,6 +55,12 @@ body {
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.tab-icon {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .tab-btn:hover {
@@ -103,6 +112,70 @@ body {
   color: var(--bg);
   background: var(--primary);
   border-color: var(--primary);
+}
+
+/* Narrow (phone) viewports: keep the tab bar and the service filter each
+   on a single scrollable row instead of wrapping across several. */
+@media (max-width: 640px) {
+  .topbar {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .topbar h1 {
+    font-size: 1.05rem;
+  }
+
+  .generated-at {
+    display: none;
+  }
+
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 2px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    padding: 8px 10px;
+  }
+
+  .tab-label {
+    display: none;
+  }
+
+  .tab-icon {
+    font-size: 1.2rem;
+  }
+
+  .filter-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 16px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-bar .filter-label,
+  .filter-btn {
+    flex-shrink: 0;
+  }
+}
+
+/* Loaded inside the Chord app's WebView: the native top bar and its own
+   icon tab row replace this page's header and nav entirely. */
+body.embedded .topbar {
+  display: none;
 }
 
 main {

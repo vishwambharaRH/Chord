@@ -50,6 +50,15 @@ jobs:
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
 
+      - name: Backfill album art for top 50 albums
+        run: python -m src.processing.art_fetcher
+        continue-on-error: true  # a 429 here shouldn't block ingest/stats for the rest of the run
+        env:
+          CHORD_DB_PATH: ${{ github.workspace }}/chord-data/chord.db
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
+
       - name: Generate dashboard stats
         run: python scripts/generate_stats.py
         env:

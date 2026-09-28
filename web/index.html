@@ -11,11 +11,21 @@
   <header class="topbar">
     <h1>🎵 Chord</h1>
     <nav class="tabs" id="tabs">
-      <button class="tab-btn active" data-tab="overview">Overview</button>
-      <button class="tab-btn" data-tab="tracks">Top Tracks</button>
-      <button class="tab-btn" data-tab="artists">Top Artists</button>
-      <button class="tab-btn" data-tab="activity">Activity</button>
-      <button class="tab-btn" data-tab="vinyl">Top Albums</button>
+      <button class="tab-btn active" data-tab="overview" aria-label="Overview">
+        <span class="tab-icon">🏠</span><span class="tab-label">Overview</span>
+      </button>
+      <button class="tab-btn" data-tab="tracks" aria-label="Top Tracks">
+        <span class="tab-icon">🎵</span><span class="tab-label">Top Tracks</span>
+      </button>
+      <button class="tab-btn" data-tab="artists" aria-label="Top Artists">
+        <span class="tab-icon">🎤</span><span class="tab-label">Top Artists</span>
+      </button>
+      <button class="tab-btn" data-tab="activity" aria-label="Activity">
+        <span class="tab-icon">📈</span><span class="tab-label">Activity</span>
+      </button>
+      <button class="tab-btn" data-tab="vinyl" aria-label="Top Albums">
+        <span class="tab-icon">💿</span><span class="tab-label">Top Albums</span>
+      </button>
     </nav>
     <span class="generated-at" id="generated-at"></span>
   </header>

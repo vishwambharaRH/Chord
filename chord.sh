@@ -17,6 +17,7 @@ Usage: ./chord.sh <command>
 Commands:
   import-spotify   Import Spotify Extended Streaming History from data/
   import-ytmusic   Import YouTube Music history from data/Takeout/
+  import-apple     Import Apple Music history from data/Apple Music Activity/
   fetch-durations  Backfill YouTube/YT Music play durations via the Data API
   fetch-art        Backfill Spotify album art (and duration) via the Web API
   sync             Poll Spotify for what's currently playing (Ctrl+C to stop)
@@ -32,6 +33,9 @@ case "${1:-}" in
         ;;
     import-ytmusic)
         "$PYTHON" -m src.ingestors.ytmusic_history
+        ;;
+    import-apple)
+        "$PYTHON" -m src.ingestors.apple_history
         ;;
     fetch-durations)
         "$PYTHON" -m src.ingestors.youtube_durations

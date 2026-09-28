@@ -24,7 +24,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "GITHUB_TOKEN", "\"${dotenv["CHORD_DATA_REPO_PAT"] ?: ""}\"")
+        buildConfigField("String", "GITHUB_TOKEN", "\"${dotenv["CHORD_DATA_MAIN_GH"] ?: ""}\"")
         buildConfigField("String", "DATA_REPO", "\"${dotenv["CHORD_DATA_REPO"] ?: "vishwambharaRH/chord-data"}\"")
     }
 
@@ -64,4 +64,5 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
 }

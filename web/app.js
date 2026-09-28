@@ -264,20 +264,26 @@ function renderVinylStats(album) {
   return stats;
 }
 
+function showTab(tabId) {
+  document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === tabId));
+  document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("active", p.id === `tab-${tabId}`));
+}
+
 function setupTabs() {
-  const buttons = document.querySelectorAll(".tab-btn");
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      buttons.forEach((b) => b.classList.remove("active"));
-      document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
-    });
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => showTab(btn.dataset.tab));
   });
 }
 
+// Called from the Android app's native tab bar when the page is embedded
+// in its WebView (see body.embedded in style.css, and ?embed=1 below).
+window.chordShowTab = showTab;
+
 async function main() {
   setupTabs();
+  if (new URLSearchParams(location.search).get("embed") === "1") {
+    document.body.classList.add("embedded");
+  }
   try {
     const res = await fetch(new URLSearchParams(location.search).get("data") || "data.json", { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
