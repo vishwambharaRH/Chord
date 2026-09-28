@@ -39,6 +39,12 @@ object AppSettings {
 // finished plays into inbox/ and downloads the generated dashboard data.
 object Uploader {
 
+    // The code repo, not the data repo — its Actions workflow is what
+    // actually ingests inbox/ into chord.db, so an upload alone otherwise
+    // just sits there until the next (often hours-delayed) scheduled run.
+    private const val WORKFLOW_REPO = "vishwambharaRH/Chord"
+    private const val WORKFLOW_FILE = "sync-plays.yml"
+
     private fun connect(url: String, method: String, accept: String): HttpURLConnection {
         val conn = URL(url).openConnection() as HttpURLConnection
         conn.requestMethod = method
@@ -79,7 +85,12 @@ object Uploader {
 
             val code = conn.responseCode
             if (code == 201) {
-                val msg = "Uploaded ${pending.size} plays"
+                val triggerError = triggerWorkflow()
+                val msg = if (triggerError == null) {
+                    "Uploaded ${pending.size} plays · sync started"
+                } else {
+                    "Uploaded ${pending.size} plays (will ingest on the next scheduled sync: $triggerError)"
+                }
                 AppSettings.recordUpload(context, already + pending.size, msg)
                 msg
             } else {
@@ -88,6 +99,26 @@ object Uploader {
             }
         } catch (e: Exception) {
             "Upload error: ${e.message}".also { AppSettings.recordStatus(context, it) }
+        }
+    }
+
+    // Fires the workflow that ingests inbox/ into chord.db and regenerates
+    // data.json, so a synced play shows up in minutes instead of waiting on
+    // GitHub's own (often hours-delayed) schedule trigger. Returns an error
+    // message, or null on success.
+    private fun triggerWorkflow(): String? {
+        return try {
+            val conn = connect(
+                "https://api.github.com/repos/$WORKFLOW_REPO/actions/workflows/$WORKFLOW_FILE/dispatches",
+                "POST", "application/vnd.github+json"
+            )
+            conn.doOutput = true
+            conn.setRequestProperty("Content-Type", "application/json")
+            conn.outputStream.use { it.write(JSONObject().put("ref", "main").toString().toByteArray()) }
+            val code = conn.responseCode
+            if (code == 204) null else "HTTP $code"
+        } catch (e: Exception) {
+            e.message ?: "unknown error"
         }
     }
 
